@@ -19,4 +19,4 @@
 
 目前暂时只支持播放一个音乐列表，下次更新会增加切换音乐列表选项。
 
-感谢 https://github.com/metowolf/Meting 提供的新版网易云音乐接口实现
+感谢 [Meting](https://github.com/metowolf/Meting) 提供的新版网易云音乐接口实现
