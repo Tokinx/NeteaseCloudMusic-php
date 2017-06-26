@@ -22,7 +22,7 @@ var ctx = {
     songUpdated: true,
     singleLoop: 1,//single loop
     playFlag: true,
-    heightActive: 35,
+    heightActive: 38,
     lrcStr: "",
     lrcMap: {}
 };
@@ -34,7 +34,7 @@ var ctx = {
         ctx.initPlayList();
         
         if(mySong != "" && ctx.currentIndex != mySong){
-            ctx.currentIndex = $("#listContent li[data-find='" + mySong + "']").index();
+            ctx.currentIndex = $(`#listContent li[data-find='${mySong}']`).index();
             ctx.currentSong = ctx.playList[ctx.currentIndex];
             $(".loop-btn").trigger("click").trigger("click");
             ctx.validatePlayList();
@@ -89,11 +89,11 @@ var ctx = {
     };
     
     ctx.initPlayList = function () {
-        var $li;
+        let $li;
         ctx.$listContent.html('');
         $('#playListCount').html(ctx.playList.length);
         $.each(ctx.playList, function (i, item) {
-            $li = $('<li data-find="' + item.id + '">').html(item.name).append($('<span>').html(' - ' + formatArtists(item.artists)));
+            $li = $(`<li data-find="${item.id}">`).html(item.name).append($('<span>').html(' - ' + item.artist.join(',')));
             $li.on('click touch', function () {
                 if (ctx.currentIndex !== i) {
                     ctx.isPlaying = true;
@@ -107,22 +107,23 @@ var ctx = {
     };
     
     ctx.showPlayList = function () {
-        if($('#play').hasClass('lists')){
-            $('#play').removeClass('lists');
-        }else{
-            $('#play').addClass('lists');
+        let p = $('#play');
+        if(p.is('.lists')){
+            p.removeClass('lists');
+        } else {
+            p.addClass('lists');
         }
     };
-    
-    ctx.hidePlayList = function () {
-        $('#play').removeClass('lists');
-    };
+    $("html,body").on('click touch touchstart', function (e) {
+        if ($(e.target).parents('#playList').length === 0 && !$(e.target).is('.list-btn') && !$(e.target).is('#play')) {
+            $('#play').removeClass('lists');
+        }
+    });
     
     ctx.validatePlayList = function () {
         this.h = (ctx.currentIndex + 1) * ctx.heightActive - ctx.$listContent.height() / 2;
         ctx.$listContent.children('li.active').removeClass('active').children("div.song-play").remove();
-        ctx.$listContent.children('li').eq(ctx.currentIndex).addClass('active')
-            .prepend($('<div>').addClass('song-play'));
+        ctx.$listContent.children('li').eq(ctx.currentIndex).addClass('active').prepend($('<div>').addClass('song-play'));
         ctx.$listContent.animate({
             scrollTop: this.h
         });
@@ -141,21 +142,25 @@ var ctx = {
         });
         ctx.player.addEventListener('canplay', ctx.readyToPlay);
         window.addEventListener('resize', ctx.updateCoverState);
-        
-        $("html,body").on('click touch touchstart', function (e) {
-            if ($(e.target).parents('#playList').length === 0 && !$(e.target).hasClass('list-btn')) {
-                ctx.hidePlayList();
-            }
-        });
-        
     };
     
     ctx.updateCoverState = function (derection, preLoad) {
-        var speed = 800, defualtUrl = myPlay + "static/song.png",
+        let speed = 800, defualtUrl = `${myPlay}/static/song.png`,
             updateAlbumImgs = function () {
-                ctx.diskCovers.attr('src', ctx.currentSong.al.picUrl);
+                $.ajax({
+                    url: `${myPlay}/get.php?pic=${ctx.currentSong.pic_id}`,
+                    type: 'GET',
+                    async: false,
+                    dataType: 'json',
+                    success: function (data) {
+                        ctx.currentSong.picUrl = data.url;
+                    },
+                    error: function (msg) {
+                        console.log(msg);
+                    }
+                });
+                ctx.diskCovers.attr('src', ctx.currentSong.picUrl);
             };
-    
         if (derection === 1) {
             ctx.songUpdated = false;
             if (preLoad) {
@@ -173,18 +178,17 @@ var ctx = {
     ctx.updateSong = function () {
         ctx.updateLyric(ctx.currentSong.id);
         $.ajax({
-            url: myPlay + '/get.php?song=' + ctx.currentSong.id,
+            url: `${myPlay}/get.php?song=${ctx.currentSong.id}`,
             type: 'GET',
             async: false,
             dataType: 'json',
             success: function (data) {
-                ctx.player.src = data.data[0].url;
+                ctx.player.src = data.url;
             },
             error: function (msg) {
                 console.log(msg);
             }
         });
-        // ctx.player.src = ctx.currentSong.mp3Url;
         setTimeout(ctx.updatePic, 10);
         ctx.updateMusicInfo();
         if (ctx.isPlaying) {
@@ -195,7 +199,7 @@ var ctx = {
     
     ctx.updateLyric = function (songID){
         $.ajax({
-            url: myPlay + '/get.php?lrc=' + songID,
+            url: `${myPlay}/get.php?lrc=${songID}`,
             type: 'GET',
             success: function (data) {
                 ctx.setLyric(data);
@@ -251,12 +255,12 @@ var ctx = {
     }
     
     ctx.updatePic = function () {
-        $(".bg").css('background-image', 'url(' + ctx.currentSong.al.picUrl + ')');
+        $("#bg").css('background-image', `url(${ctx.currentSong.picUrl})`);
     };
     
     ctx.updateMusicInfo = function () {
         $('#songName').html(ctx.currentSong.name);
-        $('#artist').html(formatArtists(ctx.currentSong.artists));
+        $('#artist').html(ctx.currentSong.artist.join(','));
     };
     
     ctx.play = function () {
@@ -337,7 +341,7 @@ var ctx = {
     };
     
     ctx.updateProcess = function () {
-        var buffer = ctx.player.buffered,
+        let buffer = ctx.player.buffered,
             bufferTime = buffer.length > 0 ? buffer.end(buffer.length - 1) : 0,
             duration = ctx.player.duration,
             currentTime = ctx.player.currentTime;
@@ -365,9 +369,9 @@ var ctx = {
     };
     
     ctx.initProcessBtn = function ($btn) {
-        var moveFun = function (e) {
-            var duration = ctx.player.duration,
-                e = e.originalEvent,
+        let moveFun = function (ex) {
+            let duration = ctx.player.duration,
+                e = ex.originalEvent,
                 totalWidth = ctx.$processBar.width(), percent, moveX, newWidth;
             e.preventDefault();
             if (ctx.processBtnState) {
@@ -403,12 +407,12 @@ var ctx = {
     
     
     function validateTime(number) {
-        var value = (number > 10 ? number + '' : '0' + number).substring(0, 2);
+        let value = (number > 10 ? number + '' : '0' + number).substring(0, 2);
         return isNaN(value) ? '00' : value;
     }
     
     function formatArtists(artists) {
-        var names = [];
+        let names = [];
         $.each(artists, function (i, item) {
             names.push(item.name);
         });
@@ -416,11 +420,11 @@ var ctx = {
     }
     
     ctx.initPlay = function (param) {
-        let url = myPlay + '/get.php?id=' + param,
+        let url = `${myPlay}/get.php?id=${param}`,
             nowDay = new Date().getDate();
 
         if(myList == ""){
-            url = myPlay + '/get.php?song=' + mySong;
+            url = `${myPlay}/get.php?song=${mySong}`;
         }
         
         $.ajax({
@@ -429,8 +433,8 @@ var ctx = {
             dataType: 'json',
             success: function (data) {
                 if(myList != ""){
-                    ctx.playList = data.playlist.tracks;
-                }else{
+                    ctx.playList = data;
+                } else {
                     ctx.playList = data.songs;
                 }
                 ctx.init();
@@ -446,31 +450,22 @@ var ctx = {
     };
     
     $("#tools div").on('click touch touchstart',function (){
-        if ($(this).hasClass('share')) {
+        if ($(this).is('.share')) {
             let url = window.location.href.split('?'),
-                share = url[0] + "/?list=" + myList + "&song=" + ctx.currentSong.id;
+                share = `${url[0]}/?list=${myList}&song=${ctx.currentSong.id}`;
             if(myList == ""){
-                share = url[0] + "/?song=" + ctx.currentSong.id;
+                share = `${url[0]}/?song=${ctx.currentSong.id}`;
             }
             if($('.share-window').length == 0){
-                $('.play-board .cover').append('<input type="text" class="share-window" value="' + share + '" />');
+                $('.play-board .cover').append(`<input type="text" class="share-window" value="${share}" />`);
             } else {
                 $('.share-window').addClass('hide');
                 setTimeout(function (){
                     $('.share-window').remove();
                 }, 650);
             }
-        } else if ($(this).hasClass('down')) {
+        } else if ($(this).is('.down')) {
             window.open(ctx.player.src);
-        }
-    });
-    
-    $("html,body").on('click touch touchstart', function (e) {
-        if ($(e.target).parents('.share-window').length === 0 && !$(e.target).hasClass('share') && !$(e.target).hasClass('share-window')) {
-            $('.share-window').addClass('hide');
-            setTimeout(function (){
-                $('.share-window').remove();
-            }, 650);
         }
     });
 })(jQuery);

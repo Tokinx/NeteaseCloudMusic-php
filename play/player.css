@@ -1,4 +1,12 @@
 @charset "utf-8";
+/*
+    Name:NeteaseCloudMusic-php
+    URL:https://github.com/Tokinx/NeteaseCloudMusic-php
+    Description:基于网易云音乐的一个网页播放器
+    Author:Tokin
+    Author URI:https://biji.io/2017/4912.html
+    Version:1.1.0
+*/
 html, body {
     margin: 0;
     height: 100%;
@@ -262,7 +270,7 @@ html, body {
 .play-list ul.list-content {
     margin: 0 auto;
     height: 320px;
-    width: 104%;
+    width: 100%;
     padding: 0;
     overflow-x: hidden;
     overflow-y: scroll;
@@ -282,8 +290,8 @@ html, body {
 ul.list-content > li {
     font-size: 14px;
     padding:0 8% 0 6%;
-    height:35px;
-    line-height:35px;
+    height:38px;
+    line-height:38px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -442,6 +450,7 @@ body.load .loading {
     left:-10%;
     right:-10%;
     width:120%;
+    max-width:380px;
     padding:10px 0;
     margin:auto;
     background:rgba(255, 255, 255, 0.3);

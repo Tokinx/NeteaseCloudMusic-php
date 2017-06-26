@@ -12,10 +12,10 @@
     $uri = explode("/", $_SERVER["REQUEST_URI"]);
     foreach ($uri as $v) {
         if(!empty($v) && count(explode("?", $v)) == 1){
-            $path .= $v;
+            $path .= $v . '/';
         }
     }
-    $url = $site . $path . '/play';
+    $url = $site . $path . 'play';
 ?>
 <!DOCTYPE html>
 <html>

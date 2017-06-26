@@ -2,6 +2,7 @@
     require 'lib/Meting.php';
     use Metowolf\Meting;
     $netease = new Meting('netease');
+    $netease->format(true);
     
     if(!empty($_GET['id'])){
         header('Content-Type: application/json;charset=UTF-8');
@@ -37,6 +38,10 @@
         
         $str = str_replace("http://m","https://m", $str);
         echo $str;
+    } else if(!empty($_GET['pic'])){
+        header('Content-Type: application/json;charset=UTF-8');
+        $str = $netease->pic($_GET['pic']);
+        echo $str;
     } else if(!empty($_GET['lrc'])){
         header('Content-Type: text/plain;charset=UTF-8');
         
@@ -57,5 +62,6 @@
         }
         fclose($fo);
     } else {
-        echo "false!";
+        // echo "false!";
+        // echo $netease->playlist('4525643');
     }
