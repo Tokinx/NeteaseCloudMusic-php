@@ -51,10 +51,10 @@
         $save = "cache/lrc/" . $name;
         if (!file_exists($save)) {
             $str = json_decode($lrc,true);
-            if(!empty($str['lrc']['lyric'])){
+            if(!empty($str['lyric'])){
                 $fo = fopen($save, "w");
-                fwrite($fo, $str['lrc']['lyric']);
-                echo $str['lrc']['lyric'];
+                fwrite($fo, $str['lyric']);
+                echo $str['lyric'];
             }
         } else {
             $fo = fopen($save, "r");
