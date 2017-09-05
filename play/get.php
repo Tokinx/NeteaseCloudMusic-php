@@ -1,5 +1,5 @@
 <?php
-    require 'lib/Meting.php';
+    require 'Meting.php';
     use Metowolf\Meting;
     $netease = new Meting('netease');
     $netease->format(true);
@@ -16,7 +16,7 @@
             $ti = filemtime($save);
             if(date("Ymd", $ti) != date("Ymd")){
                 unlink($uri);
-                $str = str_replace("http://p","https://p", $play_list);
+                $str = str_replace("http:\/\/","https:\/\/", $play_list);
                 // $str = str_replace("http://m","https://p", $str);
                 fwrite($fo, $str);
                 echo $str;
@@ -24,7 +24,7 @@
                 echo fread($fo, filesize($save));
             }
         } else {
-            $str = str_replace("http://p","https://p", $play_list);
+            $str = str_replace("http:\/\/","https:\/\/", $play_list);
             // $str = str_replace("http://m","https://p", $str);
             $fo = fopen($save, "w+");
             fwrite($fo, $str);
@@ -35,9 +35,7 @@
         header('Content-Type: application/json;charset=UTF-8');
         
         $str = $netease->url($_GET['song'], 128);
-        
-        $str = str_replace("http://m","https://m", $str);
-        echo $str;
+        echo str_replace("http:\/\/","https:\/\/", $str);
     } else if(!empty($_GET['pic'])){
         header('Content-Type: application/json;charset=UTF-8');
         $str = $netease->pic($_GET['pic']);

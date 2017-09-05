@@ -28,16 +28,11 @@
 </head>
 <body class="load">
 <div class="wrapper">
-    <div id="bg" class="bg" style="background-image: url('<?php echo $url;?>/static/song.png');"></div>
+    <!--<div id="bg" class="bg" style="background-image: url('<?php echo $url;?>/song.png');"></div>-->
     <div id="play">
         <div class="play-board">
             <div class="header cover title">
-                <img class="disk-cover" src="<?php echo $url;?>/static/song.png"/>
-                
-                <div id="tools">
-                    <div class="share"></div>
-                    <div class="down"></div>
-                </div>
+                <img class="disk-cover" src="<?php echo $url;?>/song.png"/>
                 
                 <div class="title">
                     <div class="song" id="songName"></div>
@@ -59,7 +54,8 @@
                 </div>
                 
                 <div class="control" id="controls">
-                    <span class="c-btn loop-btn" onclick="ctx.loop()"></span>
+                    <!--<span class="c-btn loop-btn" onclick="ctx.loop()"></span>-->
+                    <span class="down c-btn" onclick="ctx.down()"></span>
                     <span class="pre c-btn" onclick="ctx.prev()"></span>
                     <span class="play c-btn" onclick="ctx.play()"></span>
                     <span class="pause c-btn" onclick="ctx.pause()" style="display: none"></span>

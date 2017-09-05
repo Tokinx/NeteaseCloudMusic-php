@@ -24,7 +24,8 @@ var ctx = {
     playFlag: true,
     heightActive: 38,
     lrcStr: "",
-    lrcMap: {}
+    lrcMap: {},
+    title: ""
 };
 
 (function ($) {
@@ -88,6 +89,12 @@ var ctx = {
         }
     };
     
+    ctx.down = function () {
+        // window.open(ctx.player.src);
+        let suffix = /\.[^\.]+$/.exec(ctx.player.src);
+        ctx.openDownloadDialog(ctx.player.src, ctx.title + suffix[0]);
+    };
+    
     ctx.initPlayList = function () {
         let $li;
         ctx.$listContent.html('');
@@ -114,11 +121,11 @@ var ctx = {
             p.addClass('lists');
         }
     };
-    $("html,body").on('click touch touchstart', function (e) {
-        if ($(e.target).parents('#playList').length === 0 && !$(e.target).is('.list-btn') && !$(e.target).is('#play')) {
-            $('#play').removeClass('lists');
-        }
-    });
+    // $("html,body").on('click touch touchstart', function (e) {
+    //     if ($(e.target).parents('#playList').length === 0 && !$(e.target).is('.list-btn') && !$(e.target).is('#play')) {
+    //         $('#play').removeClass('lists');
+    //     }
+    // });
     
     ctx.validatePlayList = function () {
         this.h = (ctx.currentIndex + 1) * ctx.heightActive - ctx.$listContent.height() / 2;
@@ -145,7 +152,7 @@ var ctx = {
     };
     
     ctx.updateCoverState = function (derection, preLoad) {
-        let speed = 800, defualtUrl = `${myPlay}/static/song.png`,
+        let speed = 800, defualtUrl = `${myPlay}/song.png`,
             updateAlbumImgs = function () {
                 $.ajax({
                     url: `${myPlay}/get.php?pic=${ctx.currentSong.pic_id}`,
@@ -195,6 +202,15 @@ var ctx = {
             setTimeout(ctx.play, 500);
         }
         localStorage.setItem("currentSongIndex", ctx.currentIndex);
+        let url = window.location.href.split('?'),
+                share = `${url[0]}?list=${myList}&song=${ctx.currentSong.id}`;
+            if(myList == "") {
+                share = `${url[0]}?song=${ctx.currentSong.id}`;
+            }
+        if(window.history.pushState) {
+            document.title = ctx.title;
+            window.history.pushState({title:ctx.title, song:ctx.currentSong.id}, ctx.title, share);
+        }
     };
     
     ctx.updateLyric = function (songID){
@@ -254,13 +270,15 @@ var ctx = {
         }
     }
     
-    ctx.updatePic = function () {
-        $("#bg").css('background-image', `url(${ctx.currentSong.picUrl})`);
-    };
+    // ctx.updatePic = function () {
+    //     $("#bg").css('background-image', `url(${ctx.currentSong.picUrl})`);
+    // };
     
     ctx.updateMusicInfo = function () {
         $('#songName').html(ctx.currentSong.name);
-        $('#artist').html(ctx.currentSong.artist.join(','));
+        $('#artist').html(ctx.currentSong.artist.join('&'));
+        
+        ctx.title = ctx.currentSong.name + "-" + ctx.currentSong.artist.join('&');
     };
     
     ctx.play = function () {
@@ -365,7 +383,6 @@ var ctx = {
         if (ctx.interval) {
             clearInterval(ctx.interval);
         }
-    
     };
     
     ctx.initProcessBtn = function ($btn) {
@@ -449,25 +466,30 @@ var ctx = {
         });
     };
     
-    $("#tools div").on('click touch touchstart',function (){
-        if ($(this).is('.share')) {
-            let url = window.location.href.split('?'),
-                share = `${url[0]}/?list=${myList}&song=${ctx.currentSong.id}`;
-            if(myList == ""){
-                share = `${url[0]}/?song=${ctx.currentSong.id}`;
-            }
-            if($('.share-window').length == 0){
-                $('.play-board .cover').append(`<input type="text" class="share-window" value="${share}" />`);
-            } else {
-                $('.share-window').addClass('hide');
-                setTimeout(function (){
-                    $('.share-window').remove();
-                }, 650);
-            }
-        } else if ($(this).is('.down')) {
-            window.open(ctx.player.src);
+    ctx.openDownloadDialog =  function (url, saveName)
+    {
+        if(typeof url == 'object' && url instanceof Blob)
+        {
+            url = URL.createObjectURL(url);
         }
-    });
+        let aLink = document.createElement('a'),
+            event;
+        aLink.href = url;
+        aLink.download = saveName || '';
+        if(window.MouseEvent) {
+            event = new MouseEvent('click');
+        } else {
+            event = document.createEvent('MouseEvents');
+            event.initMouseEvent('click', true, false, window, 0, 0, 0, 0, 0, false, false, false, false, 0, null);
+        }
+        aLink.dispatchEvent(event);
+    }
 })(jQuery);
 
 ctx.initPlay(myList);
+
+window.addEventListener("popstate", function(e) {
+    ctx.title = e.state.title;
+    mySong = e.state.song;
+    ctx.init();
+});
