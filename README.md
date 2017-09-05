@@ -1,6 +1,6 @@
 # NeteaseCloudMusic-php
 
-![](https://ws2.sinaimg.cn/large/006tNc79gy1fj8tdkyi5sj30qt0f5gn1.jpg)
+![2.x](https://ws2.sinaimg.cn/large/006tNc79gy1fj8tdkyi5sj30qt0f5gn1.jpg)
 
 ### 2.x特性
 - 简洁清新的扁平设计
@@ -14,6 +14,9 @@
 - 手机版面支持良好
 - 顺序、随机、单曲循环播放 【2.1.x支持】
 - 多专辑无缝专辑切换 【2.3.x支持】
+
+
+![1.x](https://ws3.sinaimg.cn/large/006tNc79gy1fguwf69plkj30p10dhmyw.jpg)
 
 ### 1.x特性：
 - 高斯模糊的播放器效果
@@ -34,4 +37,5 @@
 目前暂时只支持播放一个音乐列表，2.3.x版本将支持多专辑切换
 
 感谢 [草莓ICON](http://chuangzaoshi.com/icon/) 提供精致的图标
+
 感谢 [Meting](https://github.com/metowolf/Meting) 提供的新版网易云音乐接口实现
