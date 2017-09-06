@@ -7,15 +7,18 @@
         $playList[0] = $_GET['list'];
     }
     
-    $site = '//' . $_SERVER['SERVER_NAME'];
-    $path = '/';
-    $uri = explode("/", $_SERVER["REQUEST_URI"]);
-    foreach ($uri as $v) {
-        if(!empty($v) && count(explode("?", $v)) == 1){
-            $path .= $v . '/';
+    $domain = '//' . $_SERVER['SERVER_NAME'];
+    $path ='';
+    $uriArr = explode("/", $_SERVER["REQUEST_URI"]);
+    foreach($uriArr as $u){
+        $params = explode("?", $u);
+        if(count($params) == 1){
+            $path .= $params[0] . '/';
+        } else {
+            $path .= empty($params[0]) ? '' : $params[0] . '/';
         }
     }
-    $url = $site . $path . 'play';
+    $url = $domain . $path . 'play';
 ?>
 <!DOCTYPE html>
 <html>
@@ -28,7 +31,6 @@
 </head>
 <body class="load">
 <div class="wrapper">
-    <!--<div id="bg" class="bg" style="background-image: url('<?php echo $url;?>/song.png');"></div>-->
     <div id="play">
         <div class="play-board">
             <div class="header cover title">
