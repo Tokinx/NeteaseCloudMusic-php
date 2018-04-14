@@ -1,5 +1,9 @@
 # NeteaseCloudMusic-php
 
+3.x预览地址：
+
+https://biji.pw/music/index.php
+
 ![2.x](https://ws2.sinaimg.cn/large/006tNc79gy1fj8tdkyi5sj30qt0f5gn1.jpg)
 
 ### 2.x特性
