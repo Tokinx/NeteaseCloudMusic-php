@@ -1,4 +1,5 @@
 <?php
+    error_reporting(0);
     require 'Meting.php';
     use Metowolf\Meting;
     $netease = new Meting('netease');
